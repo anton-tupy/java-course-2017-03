@@ -1,0 +1,58 @@
+DEFINE a 2
+DEFINE b 10
+DEFINE c 8
+# discriminant
+PUSH a
+PUSH c
+PUSH 4
+*
+*
+PUSH b
+PUSH b
+*
+-
+PRINT
+SQRT
+# /discriminant
+PUSH b
+PUSH 0
+-
+# change
++
+# /change
+PUSH a
+PUSH 2
+*
+/
+PRINT
+# /X1
+# discriminant
+PUSH a
+PUSH c
+PUSH 4
+*
+*
+PUSH b
+PUSH b
+*
+-
+SQRT
+# /discriminant
+PUSH b
+PUSH 0
+-
+# change
+-
+# /change
+PUSH a
+PUSH 2
+*
+/
+PRINT
+# /X2
+
+
+
+
+
+

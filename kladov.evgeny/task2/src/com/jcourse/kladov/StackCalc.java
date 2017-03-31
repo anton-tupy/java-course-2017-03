@@ -2,6 +2,9 @@ package com.jcourse.kladov;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
@@ -122,7 +125,33 @@ public class StackCalc {
 			}
 
 			parseCommandAnnotations(cmd);
-			cmd.execute(tokenizer);
+
+			if (commandFactory.isDebugMode()) {
+				Command finalCmd = cmd;
+
+				Object proxy = Proxy.newProxyInstance(StackCalc.class.getClassLoader(), new Class[]{Command.class},
+						new InvocationHandler() {
+							@Override
+							public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+								printStream.printf(">> COMMAND: %s, line %d\n", tokenizer.sval, tokenizer.lineno());
+								dumpInfo("BEFORE");
+								Object result = Command.class.getMethod("execute", StreamTokenizer.class).invoke(finalCmd, args);
+								dumpInfo("AFTER");
+								return result;
+							}
+
+							private void dumpInfo(String label) {
+								printStream.printf("** %s\n", label);
+								printStream.printf("   CONTEXT: %s\n", context.toString());
+								printStream.printf("   STACK: ");
+								stack.forEach(v -> printStream.printf("%f,", v));
+								printStream.println();
+							}
+						}
+				);
+				((Command) proxy).execute(tokenizer);
+			} else
+				cmd.execute(tokenizer);
 		}
 	}
 }

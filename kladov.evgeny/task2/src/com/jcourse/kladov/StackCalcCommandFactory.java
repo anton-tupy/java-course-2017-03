@@ -8,6 +8,7 @@ import java.util.Properties;
 import java.util.Set;
 
 public class StackCalcCommandFactory implements CommandFactory {
+	private boolean debug = false;
 	private Map<String, Command> commands = new HashMap<>();
 
 	StackCalcCommandFactory(String fileName) {
@@ -21,6 +22,12 @@ public class StackCalcCommandFactory implements CommandFactory {
 			System.err.printf("IOException: %s", e.toString());
 		}
 		for (String key : cmdList.stringPropertyNames()) {
+			// check for reserved keywords
+			if (key.equals("DEBUG")) {
+				debug = cmdList.getProperty("DEBUG").equals("ON");
+				continue;
+			}
+
 			String cmdClassName = cmdList.getProperty(key);
 			Object cmdInstance = null;
 
@@ -57,4 +64,7 @@ public class StackCalcCommandFactory implements CommandFactory {
 		return commands.keySet();
 	}
 
+	public boolean isDebugMode() {
+		return debug;
+	}
 }

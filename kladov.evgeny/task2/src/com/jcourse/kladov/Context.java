@@ -13,4 +13,10 @@ class Context {
 	public Double getVar(String name) {
 		return vars.get(name);
 	}
+
+	public String toString() {
+		final String[] result = {new String()};
+		vars.forEach((k, v) -> result[0] += String.format("%s=%f,", k, v.doubleValue()));
+		return result[0];
+	}
 }

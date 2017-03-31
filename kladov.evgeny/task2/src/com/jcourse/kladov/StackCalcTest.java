@@ -10,6 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class StackCalcTest {
 	@org.junit.jupiter.api.Test
 	void evaluate() {
+		assertEquals(0.0, evaluateDouble("PUSH 1 LOG PRINT"));
+		assertEquals(2.0, evaluateDouble("PUSH 2 EXP LOG PRINT"));
 		assertEquals(4.0, evaluateDouble("PUSH 4 PRINT"));
 		assertEquals(2.0, evaluateDouble("DEFINE a 4 PUSH a SQRT PRINT"));
 		final int a = 1, b = 2, c = 1;

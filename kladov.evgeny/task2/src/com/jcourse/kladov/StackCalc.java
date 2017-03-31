@@ -1,5 +1,7 @@
 package com.jcourse.kladov;
 
+import lombok.extern.log4j.Log4j;
+
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
@@ -9,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
+@Log4j
 public class StackCalc {
 
 	private BufferedReader reader;
@@ -133,7 +136,7 @@ public class StackCalc {
 						new InvocationHandler() {
 							@Override
 							public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-								printStream.printf(">> COMMAND: %s, line %d\n", tokenizer.sval, tokenizer.lineno());
+								log.info(String.format(">> COMMAND: %s, line %d", tokenizer.sval, tokenizer.lineno()));
 								dumpInfo("BEFORE");
 								Object result = Command.class.getMethod("execute", StreamTokenizer.class).invoke(finalCmd, args);
 								dumpInfo("AFTER");
@@ -141,11 +144,11 @@ public class StackCalc {
 							}
 
 							private void dumpInfo(String label) {
-								printStream.printf("** %s\n", label);
-								printStream.printf("   CONTEXT: %s\n", context.toString());
-								printStream.printf("   STACK: ");
-								stack.forEach(v -> printStream.printf("%f,", v));
-								printStream.println();
+								log.info(String.format("** %s", label));
+								log.info(String.format("   CONTEXT: %s", context.toString()));
+								final String[] strStack = {new String()};
+								stack.forEach(v -> strStack[0] += String.format("%f ", v));
+								log.info(String.format("   STACK: %s", strStack[0]));
 							}
 						}
 				);

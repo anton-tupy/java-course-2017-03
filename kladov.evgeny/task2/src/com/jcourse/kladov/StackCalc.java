@@ -69,7 +69,7 @@ public class StackCalc {
 					break;
 
 				default:
-					System.err.printf("CommandArg %s is not supported yet\n", arg.toString());
+					printStream.printf("CommandArg %s is not supported yet\n", arg.toString());
 			}
 		}
 	}
@@ -82,7 +82,7 @@ public class StackCalc {
 				field = f;
 		}
 		if (field == null) {
-			System.err.printf("Field '%s' is not found within class %s\n", name, obj.getClass());
+			printStream.printf("Field '%s' is not found within class %s\n", name, obj.getClass());
 			return;
 		}
 
@@ -91,7 +91,7 @@ public class StackCalc {
 		try {
 			field.set(obj, value);
 		} catch (IllegalAccessException e) {
-			System.err.printf("Cannot assign '%s' variable for class %s\n", name, obj.getClass());
+			printStream.printf("Cannot assign '%s' variable for class %s\n", name, obj.getClass());
 		}
 	}
 
@@ -99,9 +99,9 @@ public class StackCalc {
 		try {
 			process();
 		} catch (IOException e) {
-			System.err.printf("IOException: " + e.toString());
+			printStream.printf("IOException: " + e.toString());
 		} catch (RuntimeException e) {
-			System.err.println("Runtime exception: " + e.toString());
+			printStream.println("Runtime exception: " + e.toString());
 		}
 	}
 

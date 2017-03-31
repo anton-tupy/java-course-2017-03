@@ -1,0 +1,10 @@
+ADD=com.jcourse.kladov.AddCommand
+DEFINE=com.jcourse.kladov.DefineCommand
+DIV=com.jcourse.kladov.DivCommand
+HELP=com.jcourse.kladov.HelpCommand
+MUL=com.jcourse.kladov.MulCommand
+POP=com.jcourse.kladov.PopCommand
+PRINT=com.jcourse.kladov.PrintCommand
+PUSH=com.jcourse.kladov.PushCommand
+SQRT=com.jcourse.kladov.SqrtCommand
+SUB=com.jcourse.kladov.SubtractCommand

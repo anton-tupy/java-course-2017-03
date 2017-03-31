@@ -2,24 +2,15 @@ package com.jcourse.kladov;
 
 import java.io.IOException;
 import java.io.StreamTokenizer;
-import java.util.Map;
 import java.util.Stack;
 
+@In(args = {CommandArgs.STACK, CommandArgs.CONTEXT})
 public class DefineCommand implements Command {
-
-	private Map<String, Double> context;
-
-	public DefineCommand(Map<String, Double> context) {
-		this.context = context;
-	}
+	private Stack stack;
+	private Context context;
 
 	@Override
-	public String getName() {
-		return "DEFINE";
-	}
-
-	@Override
-	public void execute(Stack<Double> stack, StreamTokenizer st) throws IOException {
+	public void execute(StreamTokenizer st) throws IOException {
 		int token = st.nextToken();
 
 		if (token != StreamTokenizer.TT_WORD)
@@ -31,6 +22,6 @@ public class DefineCommand implements Command {
 		if (token != StreamTokenizer.TT_NUMBER)
 			throw new RuntimeException("DEFINE: Number expected");
 
-		context.put(varName, st.nval);
+		context.setVar(varName, st.nval);
 	}
 }

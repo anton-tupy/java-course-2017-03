@@ -1,31 +1,22 @@
 package com.jcourse.kladov;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Stack;
 
 public class StackCalc {
 
 	private BufferedReader reader;
 	private PrintStream printStream;
-	private Map<String, Command> commands = new HashMap<>();
-	private Map<String, Double> context = new HashMap<>();
+	private Stack<Double> stack = new Stack<>();
+	private Context context = new Context();
+	private StackCalcCommandFactory commandFactory = new StackCalcCommandFactory("commands.list");
 
 	public StackCalc(BufferedReader reader, PrintStream printStream) {
 		this.reader = reader;
 		this.printStream = printStream;
-
-		registerCommand(new DivCommand());
-		registerCommand(new MulCommand());
-		registerCommand(new AddCommand());
-		registerCommand(new SubtractCommand());
-		registerCommand(new SqrtCommand());
-		registerCommand(new PopCommand());
-		registerCommand(new DefineCommand(context));
-		registerCommand(new PushCommand(context));
-		registerCommand(new PrintCommand(printStream));
-		registerCommand(new HelpCommand(commands, printStream));
 	}
 
 	public static void main(String[] args) {
@@ -41,13 +32,61 @@ public class StackCalc {
 
 			new StackCalc(reader, System.out).evaluate();
 		} catch (FileNotFoundException e) {
-			System.err.printf("FileNotFoundException: " + e.toString());
+			System.err.printf("FileNotFoundException: \n" + e.toString());
 		}
 	}
 
 	private static void printUsage() {
 		System.out.println("Stack calculator. Reads commands from provided file and print result.");
 		System.out.println("Use HELP for list of available commands");
+	}
+
+	private void parseCommandAnnotations(Object cmdInstance) {
+		In in = (In) cmdInstance.getClass().getAnnotation(In.class);
+
+		for (CommandArgs arg : in.args()) {
+			switch (arg) {
+				case STACK:
+					assignField(cmdInstance, "stack", stack);
+					break;
+
+				case CONTEXT:
+					assignField(cmdInstance, "context", context);
+					break;
+
+				case COMMANDS:
+					assignField(cmdInstance, "commands", commandFactory.getCommandNames());
+					break;
+
+				case PRINT_STREAM:
+					assignField(cmdInstance, "printStream", printStream);
+					break;
+
+				default:
+					System.err.printf("CommandArg %s is not supported yet\n", arg.toString());
+			}
+		}
+	}
+
+	private void assignField(Object obj, String name, Object value) {
+		Field field = null;
+		List<Field> fields = Arrays.asList(obj.getClass().getDeclaredFields());
+		for (Field f : fields) {
+			if (f.getName() == name)
+				field = f;
+		}
+		if (field == null) {
+			System.err.printf("Field '%s' is not found within class %s\n", name, obj.getClass());
+			return;
+		}
+
+		field.setAccessible(true);
+
+		try {
+			field.set(obj, value);
+		} catch (IllegalAccessException e) {
+			System.err.printf("Cannot assign '%s' variable for class %s\n", name, obj.getClass());
+		}
 	}
 
 	public void evaluate() {
@@ -61,15 +100,10 @@ public class StackCalc {
 	}
 
 	private void process() throws IOException {
-		Stack<Double> stack = new Stack<>();
 		StreamTokenizer tokenizer = new StreamTokenizer(reader);
 		tokenizer.commentChar('#');
 
 		for (boolean eof = false; !eof; ) {
-			tokenizer.wordChars('-', '-');
-			tokenizer.wordChars('+', '+');
-			tokenizer.wordChars('/', '/');
-			tokenizer.wordChars('*', '*');
 			Command cmd = null;
 
 			switch (tokenizer.nextToken()) {
@@ -78,23 +112,7 @@ public class StackCalc {
 					break;
 
 				case StreamTokenizer.TT_WORD:
-					cmd = commands.get(tokenizer.sval);
-					break;
-
-				case '-':
-					cmd = commands.get("-");
-					break;
-
-				case '+':
-					cmd = commands.get("+");
-					break;
-
-				case '*':
-					cmd = commands.get("*");
-					break;
-
-				case '/':
-					cmd = commands.get("/");
+					cmd = commandFactory.getCommandByName(tokenizer.sval);
 					break;
 			}
 			if (eof)
@@ -103,12 +121,8 @@ public class StackCalc {
 				throw new RuntimeException("Unknown command: " + tokenizer.sval);
 			}
 
-			tokenizer.parseNumbers(); // reset to default interpret of -
-			cmd.execute(stack, tokenizer);
+			parseCommandAnnotations(cmd);
+			cmd.execute(tokenizer);
 		}
-	}
-
-	private void registerCommand(Command cmd) {
-		commands.put(cmd.getName(), cmd);
 	}
 }

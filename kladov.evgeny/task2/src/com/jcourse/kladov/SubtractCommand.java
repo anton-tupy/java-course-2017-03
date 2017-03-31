@@ -4,14 +4,12 @@ import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.util.Stack;
 
+@In(args = CommandArgs.STACK)
 public class SubtractCommand implements Command {
-	@Override
-	public String getName() {
-		return "-";
-	}
+	private Stack<Double> stack;
 
 	@Override
-	public void execute(Stack<Double> stack, StreamTokenizer st) throws IOException {
+	public void execute(StreamTokenizer st) throws IOException {
 		if (stack.empty())
 			throw new RuntimeException("-: Stack is empty");
 		else if (stack.size() == 1) {

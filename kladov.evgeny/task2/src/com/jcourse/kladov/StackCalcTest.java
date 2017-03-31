@@ -18,11 +18,11 @@ class StackCalcTest {
 	}
 
 	String x1Prog(int a, int b, int c) {
-		return String.format("PUSH %d PUSH %d PUSH %d * PUSH 4 PUSH %d * PUSH %d * - SQRT - PUSH 2 PUSH %d * / PRINT", b, b, b, a, c, a);
+		return String.format("PUSH %d PUSH %d PUSH %d MUL PUSH 4 PUSH %d MUL PUSH %d MUL SUB SQRT SUB PUSH 2 PUSH %d MUL DIV PRINT", b, b, b, a, c, a);
 	}
 
 	String x2Prog(int a, int b, int c) {
-		return String.format("PUSH %d PUSH %d PUSH %d * PUSH 4 PUSH %d * PUSH %d * - SQRT + - PUSH 2 PUSH %d * / PRINT", b, b, b, a, c, a);
+		return String.format("PUSH %d PUSH %d PUSH %d MUL PUSH 4 PUSH %d MUL PUSH %d MUL SUB SQRT ADD SUB PUSH 2 PUSH %d MUL DIV PRINT", b, b, b, a, c, a);
 	}
 
 	double x1(double a, double b, double c) {

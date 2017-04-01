@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Stack calculator</title>
+    <script src="js/jquery-3.2.0.js"></script>
+</head>
+<body>
+<h1> Stack calculator web app </h1>
+<p>Enter you expression here:<Br>
+    <textarea name="text" id="data" cols="40" rows="20"></textarea>
+</p>
+<a id="post" href="#">Evaluate</a>
+<a id="start" href="#">Start</a>
+<a id="step" href="#">Step</a>
+
+<div id="container"></div>
+<div id="debug"></div>
+
+</body>
+
+<script>
+    $('#step').click(function() {
+         $.ajax({
+            type: "GET",
+            cache: false,
+            url: '/step',
+            data: {},
+            success: function (response) {
+                $('#container').html(response.data);
+                $('#debug').html(response.debug);
+            }
+        });
+     });
+
+    $('#start').click(function() {
+         $.ajax({
+            type: "GET",
+            cache: false,
+            url: '/start',
+            data: {
+                'data': $("#data").val()
+            },
+            success: function (response) {
+                $('#container').html(response.data);
+                $('#debug').html(response.debug);
+            }
+        });
+    });
+
+   $('#post').click(function () {
+        if (!$("#data").val()) {
+            alert("Enter your expression!");
+        } else {
+            $.ajax({
+                type: "GET",
+                cache: false,
+                url: '/evaluate',
+                data: {
+                    'data': $("#data").val()
+                },
+                success: function (response) {
+                    $('#container').html(response.data);
+                }
+            });
+        }
+    });
+
+</script>
+
+</html>

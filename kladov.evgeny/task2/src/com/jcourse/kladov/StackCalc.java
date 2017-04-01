@@ -19,6 +19,7 @@ public class StackCalc {
 	private PrintStream printStream;
 	private Stack<Double> stack = new Stack<>();
 	private Context context = new Context();
+	private int instructionPointer = 0;
 	private Vector<Command> program = new Vector<>();
 	private StackCalcCommandFactory commandFactory = new StackCalcCommandFactory("commands.list");
 
@@ -139,8 +140,12 @@ public class StackCalc {
 	}
 
 	private void runProgram() {
-		for (int i = 0, n = program.size(); i < n; ++i) {
-			Command cmd = program.get(i);
+		for (; ; ) {
+			int ip = context.getInstructionPointer();
+			if (ip >= program.size())
+				break;
+
+			Command cmd = program.get(ip);
 
 			if (commandFactory.isDebugMode()) {
 				Command finalCmd = cmd;
@@ -167,6 +172,8 @@ public class StackCalc {
 				((Command) proxy).execute();
 			} else
 				cmd.execute();
+
+			context.moveToNextInstruction();
 		}
 	}
 }

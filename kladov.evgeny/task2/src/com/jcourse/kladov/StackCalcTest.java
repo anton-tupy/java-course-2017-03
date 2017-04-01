@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class StackCalcTest {
 	@org.junit.jupiter.api.Test
 	void evaluate() {
+		//evaluateDouble("PUSH 10 LABEL for PRINT DEC JNZ for");
 		assertEquals(0.0, evaluateDouble("PUSH 1 LOG PRINT"));
 		assertEquals(2.0, evaluateDouble("PUSH 2 EXP LOG PRINT"));
 		assertEquals(4.0, evaluateDouble("PUSH 4 PRINT"));

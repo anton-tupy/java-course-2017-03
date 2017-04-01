@@ -9,7 +9,11 @@ public class ExpCommand implements Command {
 	private Stack<Double> stack;
 
 	@Override
-	public void execute(StreamTokenizer st) throws IOException {
+	public void parseArguments(StreamTokenizer st) throws IOException {
+	}
+
+	@Override
+	public void execute() {
 		if (stack.empty())
 			throw new RuntimeException("EXP: Stack is empty");
 		else {

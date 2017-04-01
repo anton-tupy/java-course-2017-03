@@ -9,7 +9,11 @@ public class AddCommand implements Command {
 	private Stack<Double> stack;
 
 	@Override
-	public void execute(StreamTokenizer st) throws IOException {
+	public void parseArguments(StreamTokenizer st) throws IOException {
+	}
+
+	@Override
+	public void execute() {
 		if (stack.empty())
 			throw new RuntimeException("+: Stack is empty");
 		else if (stack.size() < 2)

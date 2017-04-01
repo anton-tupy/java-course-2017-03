@@ -9,7 +9,11 @@ public class SqrtCommand implements Command {
 	private Stack<Double> stack;
 
 	@Override
-	public void execute(StreamTokenizer st) throws IOException {
+	public void parseArguments(StreamTokenizer st) throws IOException {
+	}
+
+	@Override
+	public void execute() {
 		if (stack.empty())
 			throw new RuntimeException("SQRT: Stack is empty");
 

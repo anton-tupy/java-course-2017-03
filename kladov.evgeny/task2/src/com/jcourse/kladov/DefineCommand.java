@@ -10,7 +10,11 @@ public class DefineCommand implements Command {
 	private Context context;
 
 	@Override
-	public void execute(StreamTokenizer st) throws IOException {
+	public void execute() {
+	}
+
+	@Override
+	public void parseArguments(StreamTokenizer st) throws IOException {
 		int token = st.nextToken();
 
 		if (token != StreamTokenizer.TT_WORD)

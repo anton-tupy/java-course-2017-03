@@ -1,6 +1,5 @@
 package com.jcourse.kladov;
 
-import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.util.Stack;
 
@@ -9,7 +8,11 @@ public class DivCommand implements Command {
 	private Stack<Double> stack;
 
 	@Override
-	public void execute(StreamTokenizer st) throws IOException {
+	public void parseArguments(StreamTokenizer st) {
+	}
+
+	@Override
+	public void execute() {
 		if (stack.empty())
 			throw new RuntimeException("/: Stack is empty");
 		else if (stack.size() < 2)

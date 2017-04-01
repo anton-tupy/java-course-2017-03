@@ -4,5 +4,7 @@ import java.io.IOException;
 import java.io.StreamTokenizer;
 
 public interface Command {
-	void execute(StreamTokenizer st) throws IOException;
+	void parseArguments(StreamTokenizer st) throws IOException;
+
+	void execute();
 }

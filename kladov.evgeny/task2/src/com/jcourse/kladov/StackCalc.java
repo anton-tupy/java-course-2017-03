@@ -10,6 +10,7 @@ import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
+import java.util.Vector;
 
 @Log4j
 public class StackCalc {
@@ -18,6 +19,7 @@ public class StackCalc {
 	private PrintStream printStream;
 	private Stack<Double> stack = new Stack<>();
 	private Context context = new Context();
+	private Vector<Command> program = new Vector<>();
 	private StackCalcCommandFactory commandFactory = new StackCalcCommandFactory("commands.list");
 
 	public StackCalc(BufferedReader reader, PrintStream printStream) {
@@ -98,6 +100,7 @@ public class StackCalc {
 	public void evaluate() {
 		try {
 			process();
+			runProgram();
 		} catch (IOException e) {
 			printStream.printf("IOException: " + e.toString());
 		} catch (RuntimeException e) {
@@ -129,6 +132,16 @@ public class StackCalc {
 
 			parseCommandAnnotations(cmd);
 
+			cmd.parseArguments(tokenizer);
+
+			program.add(cmd);
+		}
+	}
+
+	private void runProgram() {
+		for (int i = 0, n = program.size(); i < n; ++i) {
+			Command cmd = program.get(i);
+
 			if (commandFactory.isDebugMode()) {
 				Command finalCmd = cmd;
 
@@ -136,9 +149,8 @@ public class StackCalc {
 						new InvocationHandler() {
 							@Override
 							public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-								log.info(String.format(">> COMMAND: %s, line %d", tokenizer.sval, tokenizer.lineno()));
 								dumpInfo("BEFORE");
-								Object result = Command.class.getMethod("execute", StreamTokenizer.class).invoke(finalCmd, args);
+								Object result = Command.class.getMethod("execute").invoke(finalCmd, args);
 								dumpInfo("AFTER");
 								return result;
 							}
@@ -152,9 +164,9 @@ public class StackCalc {
 							}
 						}
 				);
-				((Command) proxy).execute(tokenizer);
+				((Command) proxy).execute();
 			} else
-				cmd.execute(tokenizer);
+				cmd.execute();
 		}
 	}
 }

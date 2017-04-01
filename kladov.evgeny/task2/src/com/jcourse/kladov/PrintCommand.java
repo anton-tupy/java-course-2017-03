@@ -10,7 +10,11 @@ public class PrintCommand implements Command {
 	private PrintStream printStream;
 
 	@Override
-	public void execute(StreamTokenizer st) {
+	public void parseArguments(StreamTokenizer st) {
+	}
+
+	@Override
+	public void execute() {
 		if (stack.empty())
 			throw new RuntimeException("PRINT: stack is empty");
 		printStream.println(stack.peek());

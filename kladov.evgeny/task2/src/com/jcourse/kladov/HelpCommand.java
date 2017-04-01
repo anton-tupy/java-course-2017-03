@@ -11,7 +11,11 @@ public class HelpCommand implements Command {
 	private Set<String> commands;
 
 	@Override
-	public void execute(StreamTokenizer st) throws IOException {
+	public void parseArguments(StreamTokenizer st) throws IOException {
+	}
+
+	@Override
+	public void execute() {
 		printStream.println("List of available commands:");
 		commands.forEach(c -> printStream.println(c));
 	}

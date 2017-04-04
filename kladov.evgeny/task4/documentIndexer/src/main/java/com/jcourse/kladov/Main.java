@@ -13,7 +13,7 @@ public class Main {
 		}
 
 		try {
-			RecursiveHtmlIndexer indexer = new RecursiveHtmlIndexer(new Metric[]{new WordCounter()});
+			RecursiveHtmlIndexer indexer = new RecursiveHtmlIndexer(new Metric[]{new WordCounter(), new ImageCounter()});
 			indexer.processHtmlDocument(args[0]);
 			indexer.serializeMetrics(new CSVSerializer());
 		} catch (IOException e) {

@@ -6,7 +6,7 @@ import java.io.IOException;
 
 @Log4j
 public class RecursiveHtmlIndexer extends Indexer {
-	static final private int MAX_DEPTH = 2;
+	static final private int MAX_DEPTH = 1;
 
 	public RecursiveHtmlIndexer(Metric[] metrics) {
 		super(metrics);

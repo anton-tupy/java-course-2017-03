@@ -25,12 +25,6 @@ public class Indexer {
 	}
 
 	public void serializeMetrics(MetricSerializer serializer) {
-		metrics.forEach((m) -> {
-			try {
-				m.serialize(serializer);
-			} catch (IOException e) {
-				log.warn("Writing problem with " + serializer, e);
-			}
-		});
+		metrics.forEach((m) -> serializer.serialize(m));
 	}
 }

@@ -23,11 +23,6 @@ public class WordCounter implements Metric {
 	}
 
 	@Override
-	public void serialize(MetricSerializer s) throws IOException {
-		s.serialize(this);
-	}
-
-	@Override
 	public String getName() {
 		return "WordFreq";
 	}

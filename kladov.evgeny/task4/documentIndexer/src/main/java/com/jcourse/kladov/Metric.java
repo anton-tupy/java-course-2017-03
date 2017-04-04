@@ -1,13 +1,13 @@
 package com.jcourse.kladov;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 public interface Metric {
 	void countOn(Document doc) throws IOException;
-	void serialize(MetricSerializer s) throws IOException;
 	String getName();
+
+	Iterator<Row> getIterator();
 
 	class Column {
 		Class type;
@@ -28,6 +28,4 @@ public interface Metric {
 			this.cols = cols;
 		}
 	}
-
-	Iterator<Row> getIterator();
 }

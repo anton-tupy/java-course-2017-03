@@ -11,6 +11,8 @@ import java.util.Iterator;
 public class CSVSerializer implements MetricSerializer {
 	@Override
 	public void serialize(Metric m) {
+		log.info("Writing stats for " + m.getName());
+
 		try {
 			PrintStream printStream = new PrintStream(m.getName() + ".csv", "UTF-8");
 
@@ -19,11 +21,11 @@ public class CSVSerializer implements MetricSerializer {
 				Metric.Row row = iterator.next();
 
 				if (firstRow) {
-					Arrays.asList(row.getCols()).forEach((c)->printStream.printf("%12s\t", c.title()));
+					Arrays.asList(row.cols).forEach((c)->printStream.printf("%12s\t", c.title));
 					firstRow = false;
 				}
 				printStream.println();
-				Arrays.asList(row.getCols()).forEach((c)->printStream.printf("%12s\t", c.value().toString()));
+				Arrays.asList(row.cols).forEach((c)->printStream.printf("%12s\t", c.value.toString()));
 			}
 			printStream.close();
 		} catch (FileNotFoundException e) {

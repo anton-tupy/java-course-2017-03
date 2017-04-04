@@ -9,14 +9,24 @@ public interface Metric {
 	void serialize(MetricSerializer s) throws IOException;
 	String getName();
 
-	interface Column {
-		Class type();
-		String title();
-		Object value();
+	class Column {
+		Class type;
+		String title;
+		Object value;
+
+		Column(Class type, String title, Object value) {
+			this.type = type;
+			this.title = title;
+			this.value = value;
+		}
 	}
 
-	interface Row {
-		Column[] getCols();
+	class Row {
+		Column[] cols;
+
+		Row(Column[] cols) {
+			this.cols = cols;
+		}
 	}
 
 	Iterator<Row> getIterator();

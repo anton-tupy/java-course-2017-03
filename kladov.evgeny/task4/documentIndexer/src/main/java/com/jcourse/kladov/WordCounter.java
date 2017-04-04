@@ -57,64 +57,13 @@ public class WordCounter implements Metric {
 			if (!hasNext())
 				return null;
 
-			Stats stats = it.next();
+			final Stats stats = it.next();
 
-			return new Row() {
-				@Override
-				public Column[] getCols() {
-					Column word = new Column() {
-						@Override
-						public Class type() {
-							return String.class;
-						}
-
-						@Override
-						public String title() {
-							return "Word";
-						}
-
-						@Override
-						public Object value() {
-							return stats.word;
-						}
-					};
-
-					Column freq = new Column() {
-						@Override
-						public Class type() {
-							return Integer.class;
-						}
-
-						@Override
-						public String title() {
-							return "Freq";
-						}
-
-						@Override
-						public Object value() {
-							return stats.counter;
-						}
-					};
-
-					Column freqPercent = new Column() {
-						@Override
-						public Class type() {
-							return Double.class;
-						}
-
-						@Override
-						public String title() {
-							return "Freq%";
-						}
-
-						@Override
-						public Object value() {
-							return (double)stats.counter/processedWords*100;
-						}
-					};
-					return new Column[] {word, freq, freqPercent};
-				}
-			};
+			return new Row( new Column[] {
+					new Column(String.class, "Word", stats.word),
+					new Column(Integer.class, "Freq", stats.counter),
+					new Column(Double.class, "Freq%", (double)stats.counter/processedWords*100)
+			});
 		}
 	}
 

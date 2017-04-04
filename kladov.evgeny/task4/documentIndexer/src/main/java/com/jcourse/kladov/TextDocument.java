@@ -1,18 +1,24 @@
 package com.jcourse.kladov;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import lombok.extern.log4j.Log4j;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
+@Log4j
 public class TextDocument implements Document {
-	private InputStream stream;
+	private String fileName;
 
-	public TextDocument(String content) { this.stream = new ByteArrayInputStream(content.getBytes()); }
-
-	public TextDocument(InputStream stream) {
-		this.stream = stream;
+	public TextDocument(String fileName) {
+		this.fileName = fileName;
 	}
 
 	public WordTokenizer getWords() {
-		return new WordTokenizer(stream);
+		try {
+			return new WordTokenizer(new FileInputStream(fileName));
+		} catch (FileNotFoundException e) {
+			log.warn("File not found " + fileName);
+		}
+		return null;
 	}
 }

@@ -11,6 +11,9 @@ public class WordCounter implements Metric {
 	public void countOn(Document doc) throws IOException {
 		WordTokenizer wt = doc.getWords();
 
+		if (wt == null)
+			return;
+
 		for (String word = wt.nextWord(); word != null; word = wt.nextWord()) {
 			Stats stats = wordsMap.getOrDefault(word, new Stats(word));
 			stats.counter += 1;
@@ -27,6 +30,11 @@ public class WordCounter implements Metric {
 	@Override
 	public String getName() {
 		return "WordFreq";
+	}
+
+	@Override
+	public Iterator<Row> getIterator() {
+		return new IteratorImpl();
 	}
 
 	class IteratorImpl implements Iterator<Row> {
@@ -108,11 +116,6 @@ public class WordCounter implements Metric {
 				}
 			};
 		}
-	}
-
-	@Override
-	public Iterator<Row> getIterator() {
-		return new IteratorImpl();
 	}
 
 	private class Stats implements Comparable<Stats> {

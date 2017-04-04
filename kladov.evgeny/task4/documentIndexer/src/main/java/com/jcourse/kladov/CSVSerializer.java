@@ -3,6 +3,7 @@ package com.jcourse.kladov;
 import lombok.extern.log4j.Log4j;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -11,9 +12,7 @@ public class CSVSerializer implements MetricSerializer {
 	@Override
 	public void serialize(Metric m) {
 		try {
-			FileOutputStream file = new FileOutputStream(m.getName() + ".csv");
-			BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(file);
-			PrintStream printStream = new PrintStream(bufferedOutputStream);
+			PrintStream printStream = new PrintStream(m.getName() + ".csv", "UTF-8");
 
 			boolean firstRow = true;
 			for (Iterator<Metric.Row> iterator = m.getIterator(); iterator.hasNext(); ) {
@@ -26,8 +25,7 @@ public class CSVSerializer implements MetricSerializer {
 				printStream.println();
 				Arrays.asList(row.getCols()).forEach((c)->printStream.printf("%12s\t", c.value().toString()));
 			}
-			bufferedOutputStream.flush();
-			file.close();
+			printStream.close();
 		} catch (FileNotFoundException e) {
 			log.warn("Cannot open file for serialization metric " + m.getName() + ".csv", e);
 		} catch (IOException e) {

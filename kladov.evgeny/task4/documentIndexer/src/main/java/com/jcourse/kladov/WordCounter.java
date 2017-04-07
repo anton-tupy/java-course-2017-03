@@ -33,7 +33,7 @@ public class WordCounter implements Metric {
 	}
 
 	class IteratorImpl implements Iterator<Row> {
-		List<Stats> rows = new Vector<>();
+		List<Stats> rows = new ArrayList<>();
 		Iterator<Stats> it;
 
 		IteratorImpl() {

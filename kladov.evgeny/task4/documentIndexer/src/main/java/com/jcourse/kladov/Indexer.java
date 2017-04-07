@@ -3,12 +3,12 @@ package com.jcourse.kladov;
 import lombok.extern.log4j.Log4j;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Vector;
 
 @Log4j
 public class Indexer {
-	Vector<Metric> metrics = new Vector<>();
+	ArrayList<Metric> metrics = new ArrayList<>();
 
 	public Indexer(Metric[] metrics) {
 		Collections.addAll(this.metrics, metrics);

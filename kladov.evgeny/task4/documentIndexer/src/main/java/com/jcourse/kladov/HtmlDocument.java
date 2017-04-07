@@ -1,5 +1,6 @@
 package com.jcourse.kladov;
 
+import lombok.extern.log4j.Log4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Log4j
 public class HtmlDocument implements Document {
 	private org.jsoup.nodes.Document doc;
 
@@ -36,9 +38,14 @@ public class HtmlDocument implements Document {
 			if (src.tagName().equals("img")) {
 				int width = 0, height = 0;
 				try {
-					width = Integer.valueOf(src.attr("width"));
-					height = Integer.valueOf(src.attr("height"));
+					String strWidth = src.attr("width");
+					if (strWidth.length() > 0)
+						width = Integer.valueOf(strWidth);
+					String strHeight = src.attr("height");
+					if (strHeight.length() > 0)
+						height = Integer.valueOf(strHeight);
 				} catch (NumberFormatException e) {
+					log.trace("Converting to int from string failed ", e);
 				}
 				result.add(new ImageDescriptor(src.attr("abs:src"), width, height));
 			}

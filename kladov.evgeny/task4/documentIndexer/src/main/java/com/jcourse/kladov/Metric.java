@@ -23,9 +23,11 @@ public interface Metric {
 
 	class Row {
 		Column[] cols;
+		Object entity;
 
-		Row(Column[] cols) {
+		Row(Column[] cols, Object entity) {
 			this.cols = cols;
+			this.entity = entity;
 		}
 	}
 }

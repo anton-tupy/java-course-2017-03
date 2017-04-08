@@ -57,8 +57,9 @@ public class WordCounter implements Metric {
 			return new Row( new Column[] {
 					new Column(String.class, "Word", stats.word),
 					new Column(Integer.class, "Freq", stats.counter),
-					new Column(Double.class, "Freq%", (double)stats.counter/processedWords*100)
-			});
+					new Column(Double.class, "FreqPercent", (double)stats.counter/processedWords*100)},
+					new WordCounterEntity(0L, stats.word, stats.counter, (double)stats.counter/processedWords*100)
+			);
 		}
 	}
 

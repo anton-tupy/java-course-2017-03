@@ -46,8 +46,9 @@ public class ImageCounter implements Metric {
 				return new Row( new Column[] {
 						new Column(Integer.class, "Total images", totalImages),
 						new Column(Integer.class, "Total documents", totalDocuments),
-						new Column(Integer.class, "Images per document", totalDocuments == 0 ? 0 : totalImages / totalDocuments)
-				});
+						new Column(Integer.class, "Images per document", totalDocuments == 0 ? 0 : totalImages / totalDocuments)},
+						new ImageCounterEntity(0L, totalImages, totalDocuments, totalDocuments == 0 ? 0 : totalImages / totalDocuments)
+				);
 			}
 		};
 	}

@@ -14,5 +14,6 @@
   <modules>
     <module>exceptions</module>
     <module>index</module>
+    <module>indexHttp</module>
   </modules>
 </project>

@@ -7,6 +7,6 @@ public class Main {
 			return;
 		}
 
-		new IndexWriter(args[0]).writeIndexFile("index.html");
+		new IndexWriter(new FileSystemDataProvider(args[0]), "").writeIndexFile("index.html");
 	}
 }

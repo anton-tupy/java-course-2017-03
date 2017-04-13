@@ -1,6 +1,5 @@
 package com.jcourse.kladov;
 
-import javax.activation.MimetypesFileTypeMap;
 import java.io.*;
 import java.net.Socket;
 import java.net.URLDecoder;
@@ -8,13 +7,13 @@ import java.text.SimpleDateFormat;
 
 public class IndexHttpClient implements Runnable {
 	private final Socket socket;
-	private final String path;
+	private final DataProvider dataProvider;
 	private InputStream in;
 	private OutputStream out;
 	private Command cmdType = Command.UNKNOWN;
 
-	public IndexHttpClient(String path, Socket socket) throws IOException {
-		this.path = path;
+	public IndexHttpClient(DataProvider dataProvider, Socket socket) throws IOException {
+		this.dataProvider = dataProvider;
 		this.socket = socket;
 		this.in = socket.getInputStream();
 		this.out = socket.getOutputStream();
@@ -56,15 +55,15 @@ public class IndexHttpClient implements Runnable {
 		}
 
 		final String decodedArg = URLDecoder.decode(args[1], "UTF-8");
-		final File absolutePath = new File(path + decodedArg);
+		final AbstractFile absolutePath = dataProvider.getFile(decodedArg);
 
-		if (absolutePath.exists()) {
+		if (absolutePath.isExists()) {
 			if (absolutePath.isFile()) {
 				sendFile(absolutePath);
 			} else if (absolutePath.isDirectory()) {
-				final File indexHtml = new File(absolutePath + File.pathSeparator + "index.html");
+				final AbstractFile indexHtml = absolutePath.getChild("index.html");
 
-				if (indexHtml.exists())
+				if (indexHtml.isExists())
 					sendFile(indexHtml);
 				else
 					sendIndex(decodedArg);
@@ -95,7 +94,7 @@ public class IndexHttpClient implements Runnable {
 	}
 
 	private void sendIndex(String file) throws IOException {
-		IndexWriter indexWriter = new IndexWriter(path, file);
+		IndexWriter indexWriter = new IndexWriter(dataProvider, file);
 		ByteArrayOutputStream htmlOut = new ByteArrayOutputStream();
 		indexWriter.printIndex(new PrintStream(htmlOut));
 		//пишем статус ответа
@@ -112,24 +111,20 @@ public class IndexHttpClient implements Runnable {
 		out.flush();
 	}
 
-	private void sendFile(File file) throws IOException {
+	private void sendFile(AbstractFile file) throws IOException {
 		//пишем статус ответа
 		out.write("HTTP/1.0 200 OK\r\n".getBytes());
 		//минимально необходимые заголовки, тип и длина
-		out.write(("Content-Type: " + getContentType(file) + "\r\n").getBytes());
-		out.write(("Content-Length: " + file.length() + "\r\n").getBytes());
+		out.write(("Content-Type: " + file.getContentType() + "\r\n").getBytes());
+		out.write(("Content-Length: " + file.getLength() + "\r\n").getBytes());
 		SimpleDateFormat sdf = new SimpleDateFormat("EEE MM,dd HH:mm:ss yyyy");
-		out.write(("Last-Modified: " + sdf.format(file.lastModified()) + "\r\n").getBytes());
+		out.write(("Last-Modified: " + sdf.format(file.getModificationTime()) + "\r\n").getBytes());
 		//тело
 		if (cmdType == Command.GET) {
 			//пустая строка отделяет заголовки от тела
 			out.write("\r\n".getBytes());
-			copyToStream(new FileInputStream(file.toString()), out);
+			copyToStream(file.getContent(), out);
 		}
 		out.flush();
-	}
-
-	private String getContentType(File file) {
-		return new MimetypesFileTypeMap().getContentType(file);
 	}
 }

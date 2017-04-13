@@ -3,20 +3,17 @@ package com.jcourse.kladov;
 
 import java.io.*;
 import java.net.URLEncoder;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
 
 public class IndexWriter {
-	private String root;
-	private String arg;
+	String arg;
+	DataProvider dataProvider;
 
-	IndexWriter(String root, String arg) {
+	IndexWriter(DataProvider dataProvider, String arg) {
 		this.arg = arg;
-		this.root = root;
+		this.dataProvider = dataProvider;
 	}
 
 	public void writeIndexFile(String fileName) {
@@ -30,13 +27,13 @@ public class IndexWriter {
 	}
 
 	public void printIndex(PrintStream html) {
-		File path = new File(root + arg);
-		File parent = path.getParentFile();
-		File[] listOfFiles = path.listFiles();
+		AbstractFile path = dataProvider.getFile(arg);
+		AbstractFile parent = path.getParent();
+		AbstractFile[] listOfFiles = path.getChildren();
 
-		Set<File> files = new TreeSet<>(), folders = new TreeSet<>();
+		Set<AbstractFile> files = new TreeSet<>(), folders = new TreeSet<>();
 
-		for (File item : listOfFiles) {
+		for (AbstractFile item : listOfFiles) {
 			if (item.isFile()) {
 				files.add(item);
 			} else if (item.isDirectory()) {
@@ -49,26 +46,24 @@ public class IndexWriter {
 		if (folders.size() > 0 || parent != null) {
 			html.println("<table><tr><th>Folder</th><th>Modification time</th></tr>");
 			if (parent != null)
-				html.printf("<tr align=\"center\"><td><a href=\"%s\">..</a></td><td>%s</td></tr>\n", encodeUrl(parent), sdf.format(parent.lastModified()));
-			folders.forEach(file -> html.printf("<tr align=\"center\"><td><a href=\"%s\">%s</a></td><td>%s</td></tr>\n", encodeUrl(file), file.getName(), sdf.format(file.lastModified())));
+				html.printf("<tr align=\"center\"><td><a href=\"%s\">..</a></td><td>%s</td></tr>\n", encodeUrl(parent), sdf.format(parent.getModificationTime()));
+			folders.forEach(file -> html.printf("<tr align=\"center\"><td><a href=\"%s\">%s</a></td><td>%s</td></tr>\n", encodeUrl(file), file.getName(), sdf.format(file.getModificationTime())));
 			html.println("</table>");
 		}
 
 		if (files.size() > 0) {
 			html.println("<br/><table><tr><th>File</th><th>Modification time</th><th>Size in bytes</th></tr>");
-			files.forEach(file -> html.printf("<tr align=\"center\"><td><a href=\"%s\">%s</a></td><td>%s</td><td>%d</td></tr>\n", encodeUrl(file), file.getName(), sdf.format(file.lastModified()), file.length()));
+			files.forEach(file -> html.printf("<tr align=\"center\"><td><a href=\"%s\">%s</a></td><td>%s</td><td>%d</td></tr>\n", encodeUrl(file), file.getName(), sdf.format(file.getModificationTime()), file.getLength()));
 			html.println("</table>");
 		}
 
 		html.println("</body></html>");
 	}
 
-	private String encodeUrl(File file) {
+	private String encodeUrl(AbstractFile file) {
 		String out = new String();
 		try {
-			Path absolute = Paths.get(file.getAbsolutePath());
-			Path base = Paths.get(root);
-			out = URLEncoder.encode(base.relativize(absolute).toString(), "UTF-8");
+			out = URLEncoder.encode(file.getRelativePath(), "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}

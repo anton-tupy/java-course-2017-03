@@ -18,7 +18,7 @@ public class Main {
 
 		while(true){
 			Socket clientS = s.accept();
-			new Thread(new IndexHttpClient(path, clientS)).start();
+			new Thread(new IndexHttpClient(new FileSystemDataProvider(path), clientS)).start();
 		}
 	}
 }

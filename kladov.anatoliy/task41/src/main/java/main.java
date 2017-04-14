@@ -7,7 +7,7 @@ import java.util.*;
 
 public class main {
 	public static void main(String[] args) throws IOException {
-		String path = args[0] != null ? args[0] : "text.txt";
+		String path = (args.length == 0) ? "text.txt" : args[0];
 		Map<String, WordCounter> container = new HashMap<>();
 		processFile(path, container);
 
@@ -15,9 +15,15 @@ public class main {
 		List<WordCounter> list = sort(container, countRefs);
 		makeCsv(list, countRefs);
 
-		HibernateWorker worker = new HibernateWorker();
-		worker.save(list, countRefs);
-		worker.close();
+		HibernateWorker worker = null;
+		try {
+			worker = new HibernateWorker();
+			worker.save(list, countRefs);
+		}
+		finally {
+			worker.close();
+		}
+
 	}
 
 	public static void processFile(String path, Map<String, WordCounter> container) throws IOException {

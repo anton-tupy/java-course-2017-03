@@ -11,7 +11,7 @@ import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 
-public class HibernateWorker {
+public class HibernateWorker implements AutoCloseable {
 	private SessionFactory sessionFactory;
 
 	public HibernateWorker() {
@@ -41,7 +41,7 @@ public class HibernateWorker {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		for (WordCounter c : list) {
-			session.save(new WordCounterEntity(0L, c.getWord(), c.getRefCount(), ((double)c.getRefCount())/countRefs[0]*100));
+			session.save(new WordCounterEntity(0L, c.getWord(), c.getRefCount(), ((double)c.getRefCount())/countRefs[0]*100, new Date()));
 		}
 		session.getTransaction().commit();
 		session.close();

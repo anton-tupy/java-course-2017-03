@@ -1,5 +1,6 @@
 package com.jcourse.kladov;
 
+import javax.activation.MimetypesFileTypeMap;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
@@ -30,7 +31,9 @@ public abstract class AbstractFile implements Comparable<AbstractFile> {
 
 	abstract AbstractFile getChild(String name);
 
-	abstract String getContentType();
+	String getContentType() {
+		return new MimetypesFileTypeMap().getContentType(path);
+	}
 
 	abstract InputStream getContent() throws FileNotFoundException;
 

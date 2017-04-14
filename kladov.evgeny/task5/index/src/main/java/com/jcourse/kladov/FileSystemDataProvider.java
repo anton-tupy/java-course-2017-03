@@ -78,11 +78,6 @@ public class FileSystemDataProvider implements DataProvider {
 		}
 
 		@Override
-		String getContentType() {
-			return new MimetypesFileTypeMap().getContentType(file);
-		}
-
-		@Override
 		InputStream getContent() throws FileNotFoundException {
 			return new FileInputStream(file);
 		}

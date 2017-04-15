@@ -35,7 +35,7 @@ public abstract class AbstractFile implements Comparable<AbstractFile> {
 		return new MimetypesFileTypeMap().getContentType(path);
 	}
 
-	abstract InputStream getContent() throws FileNotFoundException;
+	abstract InputStream getContent();
 
 	abstract String getName();
 

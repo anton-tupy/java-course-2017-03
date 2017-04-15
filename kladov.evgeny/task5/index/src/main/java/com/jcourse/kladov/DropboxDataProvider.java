@@ -148,7 +148,7 @@ public class DropboxDataProvider implements DataProvider {
 		}
 
 		@Override
-		InputStream getContent() throws FileNotFoundException {
+		InputStream getContent() {
 			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 			try {
 				FileMetadata metadata = client.files()

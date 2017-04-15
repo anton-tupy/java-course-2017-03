@@ -78,8 +78,13 @@ public class FileSystemDataProvider implements DataProvider {
 		}
 
 		@Override
-		InputStream getContent() throws FileNotFoundException {
-			return new FileInputStream(file);
+		InputStream getContent() {
+			try {
+				return new FileInputStream(file);
+			} catch (FileNotFoundException e) {
+				System.out.println("File not found " + file);
+			}
+			return null;
 		}
 
 		@Override

@@ -144,7 +144,7 @@ public class DropboxDataProvider implements DataProvider {
 		@Override
 		AbstractFile getChild(String name) {
 			// Note: dropbox doesn't support paths started with /
-			return new FileImpl(isRoot() ? name : path + "/" + name);
+			return new FileImpl(path + "/" + name);
 		}
 
 		@Override

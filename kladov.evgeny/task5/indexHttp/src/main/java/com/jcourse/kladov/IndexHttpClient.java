@@ -54,7 +54,7 @@ public class IndexHttpClient implements Runnable {
 			return;
 		}
 
-		final String decodedArg = URLDecoder.decode(args[1], "UTF-8");
+		final String decodedArg = URLDecoder.decode(args[1].substring(1), "UTF-8");
 		final AbstractFile absolutePath = dataProvider.getFile(decodedArg);
 
 		if (absolutePath.isExists()) {

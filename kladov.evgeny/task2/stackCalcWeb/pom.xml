@@ -37,7 +37,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.jcource</groupId>
+			<groupId>com.jcourse.kladov</groupId>
 			<artifactId>stackCalc</artifactId>
 			<version>0.0.1</version>
 		</dependency>

@@ -2,17 +2,11 @@ package com.jcourse.kladov;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
-import com.dropbox.core.v1.DbxEntry;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.DbxPathV2;
 import com.dropbox.core.v2.files.*;
-import com.dropbox.core.v2.users.FullAccount;
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.TreeMap;
 
 public class DropboxDataProvider implements DataProvider {
@@ -159,7 +153,7 @@ public class DropboxDataProvider implements DataProvider {
 			} catch (IOException e) {
 				System.err.println("IOException: " + e.toString());
 			}
-			return new ByteInputStream(byteArrayOutputStream.toByteArray(), byteArrayOutputStream.size());
+			return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
 		}
 
 		@Override

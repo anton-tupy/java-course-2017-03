@@ -40,7 +40,7 @@ public class IndexWriter {
 				folders.add(item);
 			}
 		}
-		html.printf("<html><h2>Contents of %s</h2><body><br/>\n", arg);
+		html.printf("<html><meta charset=\"UTF-8\"></meta><h2>Contents of %s</h2><body><br/>\n", arg);
 		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 
 		if (folders.size() > 0 || parent != null) {

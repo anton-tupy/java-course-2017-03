@@ -1,14 +1,14 @@
+import javax.activation.MimetypesFileTypeMap;
 import java.io.*;
 import java.net.*;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+
+import static java.lang.System.out;
 
 /**
  * Created by Anatoliy on 09.04.2017.
@@ -82,12 +82,12 @@ public class Main {
 
 		ServerSocket serverSocket = new ServerSocket(8080);
 		while(true){
-			System.out.println("Waiting for clients");
+			out.println("Waiting for clients");
 			Socket socket = serverSocket.accept();
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					System.out.println("Client accepted");
+					out.println("Client accepted");
 					try (InputStream inputStream = socket.getInputStream();
 						 Reader reader = new InputStreamReader(inputStream);
 						 BufferedReader bufferedReader = new BufferedReader(reader)) {
@@ -100,37 +100,42 @@ public class Main {
 						String data = sb.toString();
 						String args[] = data.split(" ");
 						String cmd = args[1].trim().toUpperCase();
+						if (cmd.length() == 1)
+							cmd = URLEncoder.encode("C:/SRC", "UTF-8");
 // пишем ответ  Hello world
-						StringBuilder reply = new StringBuilder();
 						try {
-							reply.append(generateHTML(cmd.substring(1)));
+							String decoded = URLDecoder.decode(cmd, "UTF-8");
+							if (decoded.startsWith("/"))
+								decoded = decoded.substring(1);
+							Path dir = new File(decoded).toPath();
+							if (Files.isDirectory(dir)) {
+								String reply = generateHTML(decoded);
+								socket.getOutputStream().write("HTTP/1.0 200 OK\r\n".getBytes());
+								socket.getOutputStream().write("Content-Type: text/html\r\n".getBytes());
+								socket.getOutputStream().write(("Content-Length: "+reply.toString().length()+"\r\n").getBytes());
+								socket.getOutputStream().write("\r\n".getBytes());
+								socket.getOutputStream().write(reply.toString().getBytes());
+
+							} else {
+								sendFile(dir.toFile(), socket.getOutputStream());
+
+							}
+							socket.getOutputStream().flush();
+
 						} catch (FileNotFoundException e) {
-							reply.append("ups");
 							e.printStackTrace();
 						}
-//пишем статус ответа
-						socket.getOutputStream().write("HTTP/1.0 200 OK\r\n".getBytes());
-//минимально необходимые заголовки, тип и длина
-						socket.getOutputStream().write("Content-Type: text/html\r\n".getBytes());
-						socket.getOutputStream().write(("Content-Length: "+reply.toString().length()+"\r\n").getBytes());
-//пустая строка отделяет заголовки от тела
-						socket.getOutputStream().write("\r\n".getBytes());
-//тело
-						socket.getOutputStream().write(reply.toString().getBytes());
-						socket.getOutputStream().flush();
+
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					System.out.println("Done");
+					out.println("Done");
 				}
 			}, "client thread").start();
 		}
 	}
 
 	static String generateHTML(String strPath) throws IOException {
-		Path dir = new File(strPath).toPath();
-		if (!Files.isDirectory(dir))
-			return "<html><title>test</title><body>Not a directory<b>world</b></body></html>";
 		final Path currentPath = Paths.get(strPath);
 		final DirectoryStream<Path> dirIterator = Files.newDirectoryStream(currentPath);
 		StringBuilder sb = new StringBuilder();
@@ -145,15 +150,16 @@ public class Main {
 		}
 		Collections.sort(dirs);
 		Collections.sort(files);
+
+		if (currentPath.getRoot() != null && !currentPath.getRoot().toString().equals(currentPath.toString()))
+			sb.append(String.format("dir: <a href=\"%s\">..</a><br>\n", URLEncoder.encode(currentPath.getRoot().toString(), "UTF-8")));
 		for (Path dirItem: dirs) {
 			File file = dirItem.toFile();
 			sb.append(String.format("dir: <a href=\"%s\">%s</a> modified %s<br>\n", URLEncoder.encode(file.getAbsolutePath(), "UTF-8"), file.getName(), new Date(file.lastModified())));
-			//sb.append(String.format("dir: <a href=\"%s\">%s</a> modified %s<br>\n", file.getName(), file.getAbsolutePath(), new Date(file.lastModified())));
 		}
 		for (Path file: files) {
 			File f = file.toFile();
 			sb.append(String.format("file: <a href=\"%s\">%s</a> modified %s, size %s<br>\n", URLEncoder.encode(f.getAbsolutePath(), "UTF-8"), f.getName(), new Date(f.lastModified()), readableFileSize(f.length())));
-			//sb.append(String.format("file: <a href=\"%s\">%s</a> modified %s, size %s<br>\n", f.getName(), f.getAbsolutePath(), new Date(f.lastModified()), readableFileSize(f.length())));
 		}
 		sb.append("</body></html>");
 		return sb.toString();
@@ -164,5 +170,28 @@ public class Main {
 		final String[] units = new String[] { "B", "kB", "MB", "GB", "TB" };
 		int digitGroups = (int) (Math.log10(size)/Math.log10(1024));
 		return new DecimalFormat("#,##0.#").format(size/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+	}
+
+	private static void sendFile(File file, OutputStream stream) throws IOException {
+		MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap();
+		String mimeType = mimeTypesMap.getContentType(file);
+		stream.write("HTTP/1.0 200 OK\r\n".getBytes());
+		stream.write(("Content-Type: " + mimeType + "\r\n").getBytes());
+		stream.write(("Content-Length: " + file.length() + "\r\n").getBytes());
+
+		//пустая строка отделяет заголовки от тела
+		stream.write("\r\n".getBytes());
+
+		try (InputStream inputStream = new FileInputStream(file);
+			 BufferedInputStream in = new BufferedInputStream(inputStream);
+		) {
+			byte buf[] = new byte[4096];
+			int count;
+			while ((count = in.read(buf)) >= 0) {
+				stream.write(buf, 0, count);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
